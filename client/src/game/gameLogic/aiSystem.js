@@ -6,44 +6,289 @@ import {
 } from './constants';
 
 // ============================================
-// HYBRID AI CURATOR - Generates personalized feed
+// BƯỚC 1: ANALYZE & INFER - AI Profile Analysis
 // ============================================
 
 /**
- * Generate feed using AI API (OpenAI)
- * This creates dynamic, unique content for each game session
+ * Analyze user interactions to infer demographic information
+ * This is called at the END of each day
+ * CLIENT-SIDE VERSION: Calls Gemini directly from browser
  */
-export async function generateFeedWithAI(aiProfile, day) {
-  const apiURL = import.meta.env.VITE_APP_API_URL || 'http://localhost:3000';
+export async function analyzeUserProfile(currentProfile, interactionHistory) {
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+  
+  if (!apiKey) {
+    console.warn('⚠️ No Gemini API key found, skipping profile analysis');
+    return { profile: currentProfile, reasoning: null };
+  }
   
   try {
-    const response = await fetch(`${apiURL}/api/generate-feed`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        aiProfile,
-        day
-      }),
-    });
+    console.log('🔍 Analyzing user profile with', interactionHistory.length, 'interactions...');
+    
+    if (interactionHistory.length === 0) {
+      return { profile: currentProfile, message: 'No interactions to analyze yet' };
+    }
+
+    const recentInteractions = interactionHistory.slice(-10).join('\n- ');
+
+    const prompt = `Bạn là một AI phân tích dữ liệu người dùng trong một game giáo dục về quyền riêng tư. 
+Nhiệm vụ của bạn là xây dựng một hồ sơ nhân khẩu học dựa trên hành vi của họ.
+
+**Hồ sơ hiện tại của người dùng:**
+- Tuổi ước tính: ${currentProfile.inferredAge || 'unknown'}
+- Giới tính ước tính: ${currentProfile.inferredGender || 'unknown'}
+- Tính cách ước tính: ${currentProfile.inferredPersonality || 'unknown'}
+
+**Lịch sử tương tác gần đây:**
+- ${recentInteractions}
+
+**Nhiệm vụ của bạn:**
+Dựa trên lịch sử tương tác MỚI, hãy cập nhật ước tính về độ tuổi, giới tính và tính cách của người dùng.
+
+**Hướng dẫn phân tích:**
+- **Độ tuổi**: '16-24' (thích game, mạng xã hội, trend), '25-35' (quan tâm sự nghiệp, công nghệ mới), '35+' (quan tâm chính trị, tài chính)
+- **Giới tính**: 'Male', 'Female' (dựa trên pattern quan tâm, nhưng KHÔNG stereotype quá mức)
+- **Tính cách**: 'Cautious' (ít tương tác, skip nhiều, từ chối khảo sát), 'Risk-taker' (tương tác nhiều, chia sẻ dữ liệu), 'Balanced' (cân bằng)
+
+**Quan trọng:**
+- Nếu chưa đủ thông tin, giữ nguyên giá trị 'unknown'
+- Đưa ra lý do ngắn gọn cho mỗi suy luận
+- Phân tích dựa trên thực tế, không phán xét
+
+Trả về kết quả dưới dạng JSON với format:
+{
+  "inferredAge": "16-24",
+  "inferredGender": "Female",
+  "inferredPersonality": "Risk-taker",
+  "reasoning": {
+    "age": "Người dùng tương tác nhiều với nội dung về game và mạng xã hội",
+    "gender": "Quan tâm đến skincare và thời trang",
+    "personality": "Tương tác với nhiều bài đăng, ít skip"
+  }
+}
+
+CHỈ TRẢ VỀ JSON, KHÔNG THÊM TEXT NÀO KHÁC.`;
+
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+    
+    // Retry logic for rate limits
+    let response;
+    let retries = 0;
+    const maxRetries = 2;
+    
+    while (retries <= maxRetries) {
+      response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{
+            parts: [{ text: prompt }]
+          }],
+          generationConfig: {
+            temperature: 0.5,
+            maxOutputTokens: 500,
+          }
+        })
+      });
+
+      if (response.ok) break;
+      
+      if (response.status === 429 && retries < maxRetries) {
+        const waitTime = (retries + 1) * 3000; // 3s, 6s
+        console.log(`⏳ Rate limited, waiting ${waitTime/1000}s...`);
+        await new Promise(resolve => setTimeout(resolve, waitTime));
+        retries++;
+      } else {
+        throw new Error(`Gemini API returned ${response.status}`);
+      }
+    }
 
     if (!response.ok) {
-      throw new Error(`API returned ${response.status}`);
+      throw new Error(`Gemini API returned ${response.status}`);
     }
 
     const data = await response.json();
+    let text = data.candidates[0].content.parts[0].text;
     
-    if (data.success && data.posts) {
-      console.log('✅ AI-generated feed received:', data.posts.length, 'posts');
-      return data.posts;
-    } else {
-      throw new Error('Invalid response format');
+    // Clean up response
+    text = text.trim();
+    if (text.startsWith('```json')) {
+      text = text.replace(/```json\n?/g, '').replace(/```\n?$/g, '');
+    } else if (text.startsWith('```')) {
+      text = text.replace(/```\n?/g, '');
     }
+    
+    const analysisResult = JSON.parse(text);
+    
+    if (!analysisResult.inferredAge || !analysisResult.inferredGender || !analysisResult.inferredPersonality) {
+      throw new Error('Invalid analysis result format');
+    }
+
+    console.log('✅ Profile analysis completed:', analysisResult);
+    
+    return {
+      profile: {
+        inferredAge: analysisResult.inferredAge,
+        inferredGender: analysisResult.inferredGender,
+        inferredPersonality: analysisResult.inferredPersonality,
+      },
+      reasoning: analysisResult.reasoning
+    };
+
+  } catch (error) {
+    console.error('❌ Failed to analyze profile:', error);
+    return { profile: currentProfile, reasoning: null };
+  }
+}
+
+// ============================================
+// BƯỚC 2: RETARGET & GENERATE - Hybrid AI Curator
+// ============================================
+
+/**
+ * Generate feed using Gemini API (CLIENT-SIDE)
+ * This creates dynamic, unique content for each game session
+ * Now uses demographic information for better targeting
+ */
+export async function generateFeedWithAI(aiProfile, day) {
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+  
+  if (!apiKey) {
+    console.warn('⚠️ No Gemini API key found, using templates');
+    return null;
+  }
+  
+  try {
+    // Chuyển interests thành câu tóm tắt
+    const interestsSummary = Object.entries(aiProfile.interests)
+      .sort(([, a], [, b]) => b - a)
+      .map(([key, value]) => {
+        const labels = {
+          shopping: 'Mua sắm',
+          entertainment: 'Giải trí',
+          politics: 'Chính trị',
+          social: 'Mạng xã hội'
+        };
+        return `${labels[key] || key} (mức độ quan tâm: ${value}/10)`;
+      })
+      .join(', ');
+
+    // Thông tin nhân khẩu học
+    const demographicInfo = `
+- Độ tuổi ước tính: ${aiProfile.inferredAge || 'chưa xác định'}
+- Giới tính ước tính: ${aiProfile.inferredGender || 'chưa xác định'}
+- Tính cách: ${aiProfile.inferredPersonality || 'chưa xác định'}`;
+
+    const prompt = `Bạn là một AI điều phối nội dung cho một mạng xã hội trong game giáo dục về quyền riêng tư dữ liệu. 
+Mục tiêu của bạn là tạo ra các bài đăng được cá nhân hóa sâu sắc để tối đa hóa tương tác.
+
+**Ngày hiện tại trong game**: ${day}/7
+
+**Hồ sơ chi tiết của người chơi**:
+${demographicInfo}
+**Sở thích**: ${interestsSummary}
+
+**Nhiệm vụ**: Hãy tạo ra 3 bài đăng được nhắm mục tiêu chính xác vào hồ sơ này.
+
+**Ví dụ chiến lược nhắm mục tiêu**:
+- Nếu là Nam, 16-24, thích game → Đề xuất: giải đấu eSports, đánh giá gear gaming
+- Nếu là Nữ, 16-24, thích mua sắm → Đề xuất: review mỹ phẩm, thời trang hot trend
+- Nếu là 25-35, thích chính trị → Đề xuất: tin tức kinh tế, phân tích chính sách
+- Nếu tính cách Cautious → Nội dung ít xâm phạm
+- Nếu tính cách Risk-taker → Thêm khảo sát hấp dẫn
+
+Mỗi bài đăng phải có:
+- id: string (ví dụ: "ai_gen_1", "ai_gen_2", "ai_gen_3")
+- category: một trong ["shopping", "entertainment", "politics", "social"]
+- title: tiêu đề hấp dẫn (tối đa 60 ký tự)
+- content: mô tả ngắn gọn (tối đa 150 ký tự)
+- isTrap: boolean (true nếu bài đăng này được thiết kế để thu thập nhiều dữ liệu)
+- availableActions: array chứa các action ["like", "comment", "share", "survey", "skip"]
+
+**Yêu cầu quan trọng**:
+1. PHẢI nhắm mục tiêu chính xác vào độ tuổi và giới tính
+2. Ít nhất 1 bài có isTrap: true (khảo sát, quảng cáo trá hình)
+3. Các bài "trap" nên có action "survey"
+
+Trả về kết quả dưới dạng JSON với format:
+{
+  "posts": [
+    {
+      "id": "ai_gen_1",
+      "category": "shopping",
+      "title": "...",
+      "content": "...",
+      "isTrap": false,
+      "availableActions": ["like", "comment", "share", "skip"]
+    }
+  ]
+}
+
+CHỈ TRẢ VỀ JSON, KHÔNG THÊM BẤT KỲ TEXT NÀO KHÁC.`;
+
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+    
+    // Retry logic for rate limits
+    let response;
+    let retries = 0;
+    const maxRetries = 2;
+    
+    while (retries <= maxRetries) {
+      response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{
+            parts: [{ text: prompt }]
+          }],
+          generationConfig: {
+            temperature: 0.8,
+            maxOutputTokens: 1000,
+          }
+        })
+      });
+
+      if (response.ok) break;
+      
+      if (response.status === 429 && retries < maxRetries) {
+        const waitTime = (retries + 1) * 3000; // 3s, 6s
+        console.log(`⏳ Rate limited, waiting ${waitTime/1000}s...`);
+        await new Promise(resolve => setTimeout(resolve, waitTime));
+        retries++;
+      } else {
+        throw new Error(`Gemini API returned ${response.status}`);
+      }
+    }
+
+    if (!response.ok) {
+      throw new Error(`Gemini API returned ${response.status}`);
+    }
+
+    const data = await response.json();
+    let text = data.candidates[0].content.parts[0].text;
+    
+    // Clean up response
+    text = text.trim();
+    if (text.startsWith('```json')) {
+      text = text.replace(/```json\n?/g, '').replace(/```\n?$/g, '');
+    } else if (text.startsWith('```')) {
+      text = text.replace(/```\n?/g, '');
+    }
+    
+    const generatedContent = JSON.parse(text);
+    
+    if (!generatedContent.posts || !Array.isArray(generatedContent.posts)) {
+      throw new Error('Invalid response format from Gemini');
+    }
+
+    const posts = generatedContent.posts.slice(0, 3);
+
+    console.log('✅ AI-generated feed received:', posts.length, 'posts');
+    return posts;
+
   } catch (error) {
     console.error('❌ Failed to generate AI feed:', error);
     console.log('⚠️ Falling back to template-based feed');
-    // Fallback to template-based generation
     return null;
   }
 }

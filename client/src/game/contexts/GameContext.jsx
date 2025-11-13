@@ -32,6 +32,12 @@ export const initialGameState = {
       social: 0,
     },
     profileValue: 0,
+    // Dữ liệu suy luận từ AI (Bước 1: Analyze & Infer)
+    inferredAge: 'unknown',        // 'unknown', '16-24', '25-35', '35+'
+    inferredGender: 'unknown',     // 'unknown', 'Male', 'Female'
+    inferredPersonality: 'unknown', // 'unknown', 'Cautious', 'Risk-taker', 'Balanced'
+    // Lịch sử hành động để AI phân tích
+    interactionHistory: [],        // Array of action descriptions
   },
   
   // Current game data

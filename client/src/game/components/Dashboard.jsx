@@ -84,6 +84,38 @@ export default function Dashboard() {
           <span>🤖</span>
           <span>Hồ sơ AI đã xây dựng về bạn</span>
         </h3>
+
+        {/* Demographic Information (NEW) */}
+        <div className="mb-4 p-3 bg-red-900/20 border border-red-500/30 rounded-lg">
+          <div className="text-xs font-semibold text-red-400 mb-2">⚠️ Thông tin đã suy luận:</div>
+          <div className="grid grid-cols-3 gap-2 text-xs">
+            <div className="text-center">
+              <div className="text-gray-400">Độ tuổi</div>
+              <div className={`font-bold mt-1 ${aiProfile.inferredAge !== 'unknown' ? 'text-red-400' : 'text-gray-600'}`}>
+                {aiProfile.inferredAge === 'unknown' ? '?' : aiProfile.inferredAge}
+              </div>
+            </div>
+            <div className="text-center border-l border-r border-gray-700">
+              <div className="text-gray-400">Giới tính</div>
+              <div className={`font-bold mt-1 ${aiProfile.inferredGender !== 'unknown' ? 'text-red-400' : 'text-gray-600'}`}>
+                {aiProfile.inferredGender === 'unknown' ? '?' : aiProfile.inferredGender}
+              </div>
+            </div>
+            <div className="text-center">
+              <div className="text-gray-400">Tính cách</div>
+              <div className={`font-bold mt-1 ${aiProfile.inferredPersonality !== 'unknown' ? 'text-red-400' : 'text-gray-600'}`}>
+                {aiProfile.inferredPersonality === 'unknown' ? '?' : 
+                 aiProfile.inferredPersonality === 'Cautious' ? '🛡️ Cẩn thận' :
+                 aiProfile.inferredPersonality === 'Risk-taker' ? '🎲 Liều lĩnh' : '⚖️ Cân bằng'}
+              </div>
+            </div>
+          </div>
+          {(aiProfile.inferredAge !== 'unknown' || aiProfile.inferredGender !== 'unknown' || aiProfile.inferredPersonality !== 'unknown') && (
+            <div className="mt-2 text-xs text-red-400/80">
+              💡 AI đã "đọc vị" bạn dựa trên hành vi tương tác!
+            </div>
+          )}
+        </div>
         
         {/* Interests */}
         <div className="space-y-2">
@@ -125,6 +157,9 @@ export default function Dashboard() {
           </div>
           <p className="text-xs text-gray-500 mt-1">
             Giá mà nền tảng có thể bán dữ liệu của bạn
+            {aiProfile.profileValue > 100 && (
+              <span className="text-red-400"> (+{Math.floor((aiProfile.profileValue - 100) / 130 * 100)}% vì có thông tin nhân khẩu học)</span>
+            )}
           </p>
         </div>
       </div>

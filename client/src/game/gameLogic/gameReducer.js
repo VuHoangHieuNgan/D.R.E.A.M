@@ -64,13 +64,37 @@ export function gameReducer(state, action) {
         newInterests[post.category] = (newInterests[post.category] || 0) + 1;
       }
 
-      // Calculate new profile value
+      // Calculate new profile value (tăng giá trị nếu có thông tin nhân khẩu học)
       const totalInterests = Object.values(newInterests).reduce((sum, val) => sum + val, 0);
-      const newProfileValue = totalInterests * GAME_CONFIG.PROFILE_VALUE_MULTIPLIER;
+      let newProfileValue = totalInterests * GAME_CONFIG.PROFILE_VALUE_MULTIPLIER;
+      
+      // Bonus value nếu AI đã suy luận được thông tin nhân khẩu học
+      const demographicBonus = 
+        (state.aiProfile.inferredAge !== 'unknown' ? 50 : 0) +
+        (state.aiProfile.inferredGender !== 'unknown' ? 50 : 0) +
+        (state.aiProfile.inferredPersonality !== 'unknown' ? 30 : 0);
+      newProfileValue += demographicBonus;
 
       // Calculate platform revenue and profit
       const platformRevenue = interaction.platformRevenue;
       const platformProfit = platformRevenue - interaction.tokens;
+
+      // Tạo mô tả hành động cho AI phân tích (Bước 1: Analyze & Infer)
+      const categoryLabels = {
+        shopping: 'mua sắm',
+        entertainment: 'giải trí',
+        politics: 'chính trị',
+        social: 'mạng xã hội'
+      };
+      const actionDescriptions = {
+        like: 'Thích',
+        comment: 'Bình luận',
+        share: 'Chia sẻ',
+        survey: 'Làm khảo sát',
+        skip: 'Bỏ qua'
+      };
+      
+      const interactionDescription = `${actionDescriptions[interactionType] || interactionType} bài về ${categoryLabels[post.category] || post.category}: "${post.title}"`;
 
       return {
         ...state,
@@ -88,8 +112,14 @@ export function gameReducer(state, action) {
           totalProfitFromPlayer: state.platformStats.totalProfitFromPlayer + platformProfit,
         },
         aiProfile: {
+          ...state.aiProfile,
           interests: newInterests,
           profileValue: newProfileValue,
+          // Thêm hành động vào lịch sử để AI phân tích
+          interactionHistory: [
+            ...state.aiProfile.interactionHistory,
+            interactionDescription
+          ].slice(-20), // Giữ 20 hành động gần nhất
         },
         decisionsHistory: [
           ...state.decisionsHistory,
@@ -278,7 +308,13 @@ export function gameReducer(state, action) {
           break;
       }
 
+      // Xóa event và chuyển sang SUMMARY phase
       newState.currentEvent = null;
+      newState.gameFlow = {
+        ...newState.gameFlow,
+        phase: PHASES.SUMMARY
+      };
+      
       return newState;
     }
 
@@ -351,6 +387,37 @@ export function gameReducer(state, action) {
         }
       };
     }
+
+    // ==========================================
+    // AI PROFILE ANALYSIS (NEW)
+    // ==========================================
+    case ACTIONS.UPDATE_AI_PROFILE:
+      return {
+        ...state,
+        aiProfile: {
+          ...state.aiProfile,
+          inferredAge: action.payload.inferredAge || state.aiProfile.inferredAge,
+          inferredGender: action.payload.inferredGender || state.aiProfile.inferredGender,
+          inferredPersonality: action.payload.inferredPersonality || state.aiProfile.inferredPersonality,
+          // Recalculate profile value với demographic bonus
+          profileValue: state.aiProfile.profileValue + 
+            (action.payload.inferredAge !== 'unknown' && state.aiProfile.inferredAge === 'unknown' ? 50 : 0) +
+            (action.payload.inferredGender !== 'unknown' && state.aiProfile.inferredGender === 'unknown' ? 50 : 0) +
+            (action.payload.inferredPersonality !== 'unknown' && state.aiProfile.inferredPersonality === 'unknown' ? 30 : 0)
+        }
+      };
+
+    case ACTIONS.ADD_INTERACTION_HISTORY:
+      return {
+        ...state,
+        aiProfile: {
+          ...state.aiProfile,
+          interactionHistory: [
+            ...state.aiProfile.interactionHistory,
+            action.payload
+          ].slice(-20) // Keep last 20 interactions
+        }
+      };
 
     // ==========================================
     // LEADERBOARD

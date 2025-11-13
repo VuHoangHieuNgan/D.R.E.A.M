@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { GameProvider, useGame } from './contexts/GameContext';
 import { PHASES, ACTIONS } from './gameLogic/constants';
-import { generateFeedHybrid, coordinateEvent } from './gameLogic/aiSystem';
+import { generateFeedHybrid, coordinateEvent, analyzeUserProfile } from './gameLogic/aiSystem';
 import { calculateDCS, updateBotScores } from './gameLogic/leaderboardSystem';
 
 // Components
@@ -18,8 +18,43 @@ function GameController() {
   const { state, dispatch } = useGame();
   const { gameFlow, aiProfile, currentFeed, currentEvent, playerStats, platformStats, leaderboard } = state;
   const [isLoadingFeed, setIsLoadingFeed] = useState(false);
+  const [isAnalyzingProfile, setIsAnalyzingProfile] = useState(false);
 
-  // Generate feed when entering FEED phase
+  // BƯỚC 1: Analyze & Infer - Phân tích profile khi vào SUMMARY phase
+  useEffect(() => {
+    const analyzeProfile = async () => {
+      if (gameFlow.phase === PHASES.SUMMARY && aiProfile.interactionHistory.length > 0 && !isAnalyzingProfile) {
+        setIsAnalyzingProfile(true);
+        
+        try {
+          console.log('🔍 Bắt đầu phân tích hồ sơ người chơi...');
+          const result = await analyzeUserProfile(aiProfile, aiProfile.interactionHistory);
+          
+          if (result.profile) {
+            // Cập nhật AI profile với thông tin mới
+            dispatch({ 
+              type: ACTIONS.UPDATE_AI_PROFILE, 
+              payload: result.profile 
+            });
+            
+            // Show notification nếu có thông tin mới được phát hiện
+            if (result.reasoning) {
+              console.log('💡 AI đã suy luận:', result.reasoning);
+            }
+          }
+        } catch (error) {
+          console.error('Lỗi khi phân tích profile:', error);
+        } finally {
+          setIsAnalyzingProfile(false);
+        }
+      }
+    };
+
+    analyzeProfile();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gameFlow.phase]); // CHỈ trigger khi phase thay đổi
+
+  // BƯỚC 2: Retarget & Generate - Generate feed when entering FEED phase
   useEffect(() => {
     if (gameFlow.phase === PHASES.FEED && currentFeed.length === 0 && !isLoadingFeed) {
       setIsLoadingFeed(true);
@@ -35,7 +70,8 @@ function GameController() {
           setIsLoadingFeed(false);
         });
     }
-  }, [gameFlow.phase, gameFlow.day, currentFeed.length, aiProfile, dispatch, isLoadingFeed]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gameFlow.phase, gameFlow.day, currentFeed.length]); // CHỈ trigger khi phase/day/feed thay đổi
 
   // Event generation is now handled manually by user clicking "End Day" button
   // This useEffect is removed to give players full control over when to end the day
@@ -64,7 +100,8 @@ function GameController() {
       
       dispatch({ type: ACTIONS.UPDATE_LEADERBOARD, payload: finalLeaderboard });
     }
-  }, [gameFlow.phase, gameFlow.day, playerStats, platformStats, leaderboard, dispatch]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gameFlow.phase, gameFlow.day]); // CHỈ trigger khi phase/day thay đổi
 
   // Render appropriate screen based on phase
   switch (gameFlow.phase) {

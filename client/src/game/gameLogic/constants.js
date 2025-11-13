@@ -32,6 +32,10 @@ export const ACTIONS = {
   SET_FEED: 'SET_FEED',
   SET_EVENT: 'SET_EVENT',
   
+  // AI Profile Analysis (NEW - Bước 1: Analyze & Infer)
+  UPDATE_AI_PROFILE: 'UPDATE_AI_PROFILE',
+  ADD_INTERACTION_HISTORY: 'ADD_INTERACTION_HISTORY',
+  
   // Leaderboard
   UPDATE_LEADERBOARD: 'UPDATE_LEADERBOARD',
 };
