@@ -7,28 +7,35 @@ export default function Cursor() {
   const svg = useRef(null);
 
   useEffect(() => {
+    if (!curs.current || !svg.current) return;
+
+    const cursEl = curs.current;
+    const svgEl = svg.current;
     const images = document.querySelectorAll(".img");
 
     const tl = gsap.timeline({ paused: true });
 
-    tl.to(curs.current, { height: "112px", width:"112px", ease: "expo.inout" }).to(
-      svg.current,
+    tl.to(cursEl, { height: "112px", width:"112px", ease: "expo.inout" }).to(
+      svgEl,
       { opacity: 1, width: "96px", height:"96px" },
       0
     );
 
-    images.forEach((img) => {
-      img.addEventListener("mouseenter", function () {
-        tl.play();
-      });
+    const handleMouseEnter = function () {
+      tl.play();
+    };
 
-      img.addEventListener("mouseleave", function () {
-        tl.reverse();
-        tl.eventCallback("onReverseComplete", function () {
-          gsap.set(svg.current, { opacity: 0 });
-          gsap.set(curs.current, { height: "12px", width:"12px" });
-        });
+    const handleMouseLeave = function () {
+      tl.reverse();
+      tl.eventCallback("onReverseComplete", function () {
+        gsap.set(svgEl, { opacity: 0 });
+        gsap.set(cursEl, { height: "12px", width:"12px" });
       });
+    };
+
+    images.forEach((img) => {
+      img.addEventListener("mouseenter", handleMouseEnter);
+      img.addEventListener("mouseleave", handleMouseLeave);
     });
 
     function moveCursor(e) {
@@ -38,6 +45,11 @@ export default function Cursor() {
 
     return () => {
       document.removeEventListener("mousemove", moveCursor);
+      images.forEach((img) => {
+        img.removeEventListener("mouseenter", handleMouseEnter);
+        img.removeEventListener("mouseleave", handleMouseLeave);
+      });
+      tl.kill();
     };
   }, []);
 

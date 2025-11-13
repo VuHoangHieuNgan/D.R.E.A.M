@@ -13,22 +13,39 @@ export default function ServiceUi({ title, description, items }) {
 
       
   useEffect(() => {
-    ScrollTrigger.create({
-      trigger: serviceUi.current,
+    // Check if refs are available
+    if (!serviceUi.current || !heading.current || !body.current || !line.current || !services.current) {
+      return;
+    }
+
+    // Save ref values for cleanup
+    const serviceUiEl = serviceUi.current;
+    const headingEl = heading.current;
+    const bodyEl = body.current;
+    const lineEl = line.current;
+    const servicesEl = services.current;
+
+    const trigger = ScrollTrigger.create({
+      trigger: serviceUiEl,
       // markers: true,
       start:"150px bottom",
       animation: gsap
         .timeline()
-        .to(heading.current, { opacity: 1, y: 0, ease: "power4.out", duration: 1.25 }, 0)
-        .to(body.current, { opacity: 1, y: 0, ease: "power4.out", duration: 1.25 }, 0.2)
-        .to(line.current, { width: "100%", ease: "power4.inOut", duration: 1.5 }, 0.2)
-        .to(services.current, { opacity: 1, y: 0, ease: "power4.out", duration: 1.25}, 0.5),
+        .to(headingEl, { opacity: 1, y: 0, ease: "power4.out", duration: 1.25 }, 0)
+        .to(bodyEl, { opacity: 1, y: 0, ease: "power4.out", duration: 1.25 }, 0.2)
+        .to(lineEl, { width: "100%", ease: "power4.inOut", duration: 1.5 }, 0.2)
+        .to(servicesEl, { opacity: 1, y: 0, ease: "power4.out", duration: 1.25}, 0.5),
 
       toggleActions: "play none none none",
     });
     ScrollTrigger.refresh();
 
-  }, [serviceUi])
+    return () => {
+      if (trigger) {
+        trigger.kill();
+      }
+    };
+  }, [])
 
 
   return (

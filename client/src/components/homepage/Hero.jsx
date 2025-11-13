@@ -10,35 +10,47 @@ export default function Hero() {
   const scroll = useRef(null)
 
   useEffect(() => {
+    // Check if refs are available
+    if (!scrollLine.current || !imgContainer.current || !img.current || !scroll.current) {
+      return;
+    }
+
+    // Save ref values to variables for cleanup
+    const scrollLineEl = scrollLine.current;
+    const imgContainerEl = imgContainer.current;
+    const imgEl = img.current;
+    const scrollEl = scroll.current;
+    const titlesEls = titles.current;
+
     const ScrollTl = gsap.timeline({ repeat: -1 });
     ScrollTl.fromTo(
-      scrollLine.current,
+      scrollLineEl,
       { translateX: -40 },
       { translateX: 40, duration: 1.5, ease: "power4.inOut" }
     );
 
     const mainTl = gsap.timeline();
 
-    gsap.set(imgContainer.current, { scale: 0.9 });
-    gsap.set(img.current, { scale: 1.5 });
+    gsap.set(imgContainerEl, { scale: 0.9 });
+    gsap.set(imgEl, { scale: 1.5 });
 
-    mainTl.to(imgContainer.current, {
+    mainTl.to(imgContainerEl, {
       scale: 1,
       duration: 3.25,
       ease: "power3.inOut"
     })
     .to(
-      img.current,
+      imgEl,
       { scale: 1, duration: 3.2, ease: "power4.inOut" },
       "-=3.1"
     )
     .to(
-      titles.current,
+      titlesEls,
       { y: 0, duration: 2, ease: "power4.inOut" },
       "-=2.5"
     )
     .fromTo(
-      scroll.current,
+      scrollEl,
       { opacity: 0 },
       { opacity: 1, duration: 1, ease: "out" },
       "-=2"
@@ -47,7 +59,10 @@ export default function Hero() {
     return () => {
       ScrollTl.kill();
       mainTl.kill();
-      gsap.set([imgContainer.current, img.current], { clearProps: "all" });
+      // Clear props using saved variables
+      if (imgContainerEl && imgEl) {
+        gsap.set([imgContainerEl, imgEl], { clearProps: "all" });
+      }
     };
   }, []);
 

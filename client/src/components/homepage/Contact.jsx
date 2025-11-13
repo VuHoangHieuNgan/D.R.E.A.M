@@ -14,20 +14,35 @@ export default function Contact() {
   const apiURL = import.meta.env.VITE_APP_API_URL;
 
   useEffect(() => {
-    ScrollTrigger.create({
-      trigger: contactSection.current,
+    // Check if refs are available
+    if (!contactSection.current || !heading.current || !body.current) {
+      return;
+    }
+
+    // Save ref values for cleanup
+    const contactSectionEl = contactSection.current;
+    const headingEl = heading.current;
+    const bodyEl = body.current;
+
+    const trigger = ScrollTrigger.create({
+      trigger: contactSectionEl,
       start:"180px bottom",
       // markers: true,
       animation: gsap
         .timeline()
-        .to(heading.current, { opacity: 1, y: 0, ease: "power4.out", duration: 1.25 }, 0)
-        .to(body.current, { opacity: 1, y: 0, ease: "power4.out", duration: 1.25 }, 0.2),
+        .to(headingEl, { opacity: 1, y: 0, ease: "power4.out", duration: 1.25 }, 0)
+        .to(bodyEl, { opacity: 1, y: 0, ease: "power4.out", duration: 1.25 }, 0.2),
 
       toggleActions: "play none none none",
     });
     ScrollTrigger.refresh();
 
-  }, [contactSection])
+    return () => {
+      if (trigger) {
+        trigger.kill();
+      }
+    };
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => {

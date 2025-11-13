@@ -11,19 +11,29 @@ export default function About() {
   const body = useRef(null);
 
   useEffect(() => {
-    ScrollTrigger.create({
-      trigger: aboutSection.current,
+    // Check if refs are available
+    if (!aboutSection.current || !heading.current || !body.current) {
+      return;
+    }
+
+    // Save ref values for cleanup
+    const aboutSectionEl = aboutSection.current;
+    const headingEl = heading.current;
+    const bodyEl = body.current;
+
+    const trigger = ScrollTrigger.create({
+      trigger: aboutSectionEl,
       start: "top 20%",
       // markers: true,
       animation: gsap
         .timeline()
         .to(
-          heading.current,
+          headingEl,
           { opacity: 1, y: 0, ease: "power4.out", duration: 1.25 },
           0
         )
         .to(
-          body.current,
+          bodyEl,
           { opacity: 1, y: 0, ease: "power4.out", duration: 1.25 },
           0.2
         ),
@@ -31,7 +41,13 @@ export default function About() {
       toggleActions: "play none none none",
     });
     ScrollTrigger.refresh();
-  }, [aboutSection]);
+
+    return () => {
+      if (trigger) {
+        trigger.kill();
+      }
+    };
+  }, []);
 
   return (
     <section ref={aboutSection} aria-label="about me">
