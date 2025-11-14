@@ -102,26 +102,22 @@ export default function NavBar({ sectionRefs, color }) {
         </div>
         <h1 
           ref={logo}
-          className="font-grotesk text-2xl font-black tracking-wider bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"
+          className="font-inter text-2xl font-bold tracking-wider bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"
         >
           D.R.E.A.M
         </h1>
       </Link>
 
       {/* Navigation */}
-      <nav className="flex items-center space-x-6 font-grotesk text-sm font-medium">
+      <nav className="flex items-center space-x-6 font-roboto text-sm font-light">
         {!isGamePage && (
           <>
             <a href="#about" className="group relative hidden md:inline-block hover:text-blue-600 transition-colors">
-              <span>About</span>
-              <span className="absolute bottom-0 left-0 h-[2px] w-0 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 duration-300 ease-in-out group-hover:w-full"></span>
-            </a>
-            <a href="#services" className="group relative hidden md:inline-block hover:text-blue-600 transition-colors">
-              <span>Services</span>
+              <span>Vấn Đề</span>
               <span className="absolute bottom-0 left-0 h-[2px] w-0 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 duration-300 ease-in-out group-hover:w-full"></span>
             </a>
             <a href="#works" className="group relative hidden md:inline-block hover:text-blue-600 transition-colors">
-              <span>Projects</span>
+              <span>Nội Dung</span>
               <span className="absolute bottom-0 left-0 h-[2px] w-0 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 duration-300 ease-in-out group-hover:w-full"></span>
             </a>
           </>
@@ -144,7 +140,7 @@ export default function NavBar({ sectionRefs, color }) {
             href="#contact"
           >
             <span className="relative w-fit flex items-center gap-2">
-              <span>Let's Talk</span>
+              <span>Cùng Bàn Luận</span>
               <span className="text-lg group-hover:translate-x-1 transition-transform duration-300">→</span>
             </span>
           </a>

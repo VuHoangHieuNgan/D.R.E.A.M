@@ -37,6 +37,10 @@ export default {
       fontFamily: {
         'general': ['GeneralSans-Variable', 'sans-serif'],
         'grotesk': ['CabinetGrotesk-Variable', 'sans-serif'],
+        'inter': ['Inter', 'sans-serif'],
+        'montserrat': ['Montserrat', 'sans-serif'],
+        'roboto': ['Roboto', 'sans-serif'],
+        'open-sans': ['Open Sans', 'sans-serif'],
       },
       colors: {
         'transparent': 'transparent',

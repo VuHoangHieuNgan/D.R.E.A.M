@@ -1,28 +1,27 @@
-import { Icon } from "@iconify/react";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { ScrollTrigger } from "gsap/all";
 import { gsap } from "gsap";
 import Heading from "../ui/Heading";
 
 export default function Contact() {
-  const [time, setTime] = useState(new Date().toLocaleTimeString());
-  const [buttonText, setButtonText] = useState("Send Message");
-
-  const heading = useRef(null)
-  const body = useRef(null)
+  const heading1 = useRef(null)
+  const body1 = useRef(null)
+  const heading2 = useRef(null)
+  const body2 = useRef(null)
   const contactSection = useRef(null)
-  const apiURL = import.meta.env.VITE_APP_API_URL;
 
   useEffect(() => {
     // Check if refs are available
-    if (!contactSection.current || !heading.current || !body.current) {
+    if (!contactSection.current || !heading1.current || !body1.current || !heading2.current || !body2.current) {
       return;
     }
 
     // Save ref values for cleanup
     const contactSectionEl = contactSection.current;
-    const headingEl = heading.current;
-    const bodyEl = body.current;
+    const heading1El = heading1.current;
+    const body1El = body1.current;
+    const heading2El = heading2.current;
+    const body2El = body2.current;
 
     const trigger = ScrollTrigger.create({
       trigger: contactSectionEl,
@@ -30,8 +29,10 @@ export default function Contact() {
       // markers: true,
       animation: gsap
         .timeline()
-        .to(headingEl, { opacity: 1, y: 0, ease: "power4.out", duration: 1.25 }, 0)
-        .to(bodyEl, { opacity: 1, y: 0, ease: "power4.out", duration: 1.25 }, 0.2),
+        .to(heading1El, { opacity: 1, y: 0, ease: "power4.out", duration: 1.25 }, 0)
+        .to(body1El, { opacity: 1, y: 0, ease: "power4.out", duration: 1.25 }, 0.2)
+        .to(heading2El, { opacity: 1, y: 0, ease: "power4.out", duration: 1.25 }, 0.4)
+        .to(body2El, { opacity: 1, y: 0, ease: "power4.out", duration: 1.25 }, 0.6),
 
       toggleActions: "play none none none",
     });
@@ -44,41 +45,6 @@ export default function Contact() {
     };
   }, []);
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTime(new Date().toLocaleTimeString());
-    }, 1000);
-    return () => clearInterval(timer);
-  });
-
-  const sendEmail = async (e) => {
-    e.preventDefault();
-    setButtonText("Sending...");
-
-    const data = {
-      name: e.target.name.value,
-      email: e.target.email.value,
-      message: e.target.message.value,
-    };
-
-    const res = await fetch(`${apiURL}/send`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-
-    if (res.ok) {
-      setButtonText("Message Sent! ^_^");
-      e.target.reset();
-    } else {
-      setButtonText("Failed to send :(");
-    }
-
-    setTimeout(() => {
-      setButtonText("Send Message");
-    }, 6000);
-  };
-
   return (
     <section
       id="contact"
@@ -87,159 +53,26 @@ export default function Contact() {
     >
       
       
-      <Heading title="Contact" />
-      <div ref={contactSection} className="mt-10 flex flex-col gap-20 md:grid md:grid-cols-6 md:px-12">
-        <div className="col-span-4">
-          <h3 ref={heading} className="max-w-lg 2xl:max-w-3xl text-heading-3 2xl:text-7xl font-semibold leading-tight translate-y-10 opacity-0">
-            Have an awesome idea? Let&apos;s bring it to life.
+      <Heading title="Thông Điệp" />
+      <div ref={contactSection} className="mt-10 max-w-5xl mx-auto space-y-16">
+        {/* Phần 1: Khẳng Định Chung */}
+        <div className="space-y-6">
+          <h3 ref={heading1} className="text-heading-3 2xl:text-6xl font-inter font-bold leading-tight translate-y-10 opacity-0 text-black">
+            ⚡ Tương Lai Dữ Liệu: Chúng Ta Có Còn Là Chủ?
           </h3>
-          <form
-            name="contact"
-            action="/contact"
-            autoComplete="off"
-            onSubmit={sendEmail}
-            className="mt-10 font-grotesk"
-            method="POST" 
-          >
-            <input type="hidden" name="form-name" value="contact"/>
-            <div className="grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2">
-              <div className="relative z-0">
-                  <input
-                    required
-                    type="text"
-                    id="name"
-                    name="name"
-                    className="peer block w-full appearance-none border-0 border-b border-accent-100 bg-transparent px-0 py-2.5 focus:outline-none focus:ring-0"
-                    placeholder=" "
-                  />
-                <label
-                  htmlFor="name"
-                  className="absolute top-3 -z-10 origin-[0] -translate-y-6 scale-75 transform text-body-3 2xl:text-body-2 text-secondary-600 duration-300 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:left-0 peer-focus:-translate-y-6 peer-focus:scale-75"
-                >
-                  Lewis Hamilton {"("}your name{")"} 
-                </label>
-              </div>
-              <div className="relative z-0">
-                <input
-                  required
-                  type="text"
-                  name="email"
-                  id="email"
-                  className="peer block w-full appearance-none border-0 border-b border-accent-100 bg-transparent px-0 py-2.5 focus:outline-none focus:ring-0"
-                  placeholder=" "
-                />
-                <label
-                  htmlFor="email"
-                  className="absolute top-3 -z-10 origin-[0] -translate-y-6 scale-75 transform text-body-3 2xl:text-body-2 text-secondary-600 duration-300 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:left-0 peer-focus:-translate-y-6 peer-focus:scale-75"
-                >
-                  lh@44.com {"("}your email{")"} 
-                </label>
-              </div>
-              <div className="relative z-0 sm:col-span-2">
-                <textarea
-                  required
-                  id="message"
-                  name="message"
-                  rows="5"
-                  className="peer block w-full appearance-none border-0 border-b border-accent-100 bg-transparent px-0 py-2.5 focus:outline-none focus:ring-0"
-                  placeholder=" "
-                ></textarea>
-                <label
-                  htmlFor="message"
-                  className="absolute top-3 -z-10 origin-[0] -translate-y-6 scale-75 transform text-body-3 2xl:text-body-2 text-secondary-600 duration-300 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:left-0 peer-focus:-translate-y-6 peer-focus:scale-75"
-                >
-                  Through goes Hamilton!! {"("}your message{")"}
-                </label>
-              </div>
-            </div>
-            <button
-              type="submit"
-              className="button group mt-10 border duration-200 hover:border-accent-400 hover:bg-transparent"
-            >
-              <span className="relative">
-                <span className="absolute top-4 h-1 w-0 bg-secondary-700 opacity-90 duration-300 ease-inOut group-hover:w-full"></span>
-                <span className="group-hover:text-accent-400">
-                  {buttonText}
-                </span>
-              </span>
-            </button>
-          </form>
+          <p ref={body1} className="text-body-1 2xl:text-2xl font-roboto font-light leading-relaxed translate-y-10 opacity-0 text-black">
+            Từ học thuyết Marx về Địa tô đất đai, chúng ta nhận ra rằng trong nền kinh tế số, tài sản cá nhân và sức lao động của hàng tỷ người đang bị biến thành nguồn lợi nhuận tập trung (Địa tô Dữ liệu). Việc chúng ta tiêu thụ nội dung, tương tác, và thậm chí chỉ là sự chú ý, đều đang nuôi dưỡng một cơ chế tích lũy tư bản mới, gây ra bất bình đẳng về kinh tế, quyền lực và tự do cá nhân.
+          </p>
         </div>
-        <div className="col-span-2 grid grid-cols-1 gap-x-4 gap-y-8 text-accent-300 sm:grid-cols-2 sm:gap-y-0 md:grid-cols-1">
-          <div className="space-y-3 ">
-            <h4 className="text-body-1 2xl:text-4xl font-semibold">Contact Details</h4>
-            <div className="flex flex-col space-y-3 text-body-2 2xl:text-3xl">
-              <a
-                href="mailto:nikunjmathur0810@gmail.com"
-                className="group relative w-fit cursor-pointer"
-                target="_blank"
-                rel="noreferrer"
-              >
-                <span>nikunjmathur0810@gmail.com</span>
-                <span className="absolute bottom-0 left-0 h-[0.12em] w-0 rounded-full bg-secondary-600 duration-300 ease-in-out group-hover:w-full"></span>
-              </a>
-              <a
-                href="https://drive.google.com/file/d/1aRhnhQ-G9UOkpJUWGNQApCu05gLXzmmn/view?usp=sharing"
-                className="group relative w-fit cursor-pointer"
-                target="_blank"
-                rel="noreferrer"
-              >
-                <span>Resume</span>
-                <span className="absolute bottom-0 left-0 h-[0.12em] w-0 rounded-full bg-secondary-600 duration-300 ease-in-out group-hover:w-full"></span>
-              </a>
-             
-            </div>
-          </div>
-          <div className="space-y-3 ">
-            <h4 className="text-body-1 2xl:text-4xl font-semibold">My Digital Spaces</h4>
-            <div className="space-y-3 text-body-2 2xl:text-3xl">
-              <a
-                href="https://github.com/nikunjmathur08"
-                className="group flex items-center space-x-2"
-                target="_blank"
-                rel="noreferrer"
-              >
-                <Icon icon="pajamas:github" color="#666" />
-                <div className="relative">
-                  <span>Github</span>
-                  <span className="absolute bottom-0 left-0 h-[0.10em] w-0 rounded-full bg-secondary-600 duration-300 ease-in-out group-hover:w-full"></span>
-                </div>
-              </a>
-              <a
-                href="https://www.linkedin.com/in/nikunjmathur08/"
-                className="group group flex w-fit items-center space-x-2"
-                target="_blank"
-                rel="noreferrer"
-              >
-                <Icon icon="pajamas:linkedin" color="#666" />
-                <div className="relative">
-                  <span>LinkedIn</span>
-                  <span className="absolute bottom-0 left-0 h-[0.12em] w-0 rounded-full bg-secondary-600 duration-300 ease-in-out group-hover:w-full"></span>
-                </div>
-              </a>
-              <a
-                href="https://x.com/nikunjmathur08"
-                className="group group flex w-fit items-center space-x-2"
-                target="_blank"
-                rel="noreferrer"
-              >
-                <Icon icon="pajamas:twitter" color="#666" />
-                <div className="relative">
-                  <span>X</span>
-                  <span className="absolute bottom-0 left-0 h-[0.12em] w-0 rounded-full bg-secondary-600 duration-300 ease-in-out group-hover:w-full"></span>
-                </div>
-              </a>
-            </div>
-          </div>
-          <div className="space-y-3 ">
-            <h4 className="text-body-1 font-semibold 2xl:text-4xl">Location</h4>
-            <div className="space-y-2 text-body-2 2xl:text-3xl">
-              <p>
-                New Delhi, India <br></br>
-                {time}
-              </p>
-            </div>
-          </div>
+
+        {/* Phần 2: Kêu Gọi Trách Nhiệm */}
+        <div className="space-y-6">
+          <h3 ref={heading2} className="text-heading-3 2xl:text-6xl font-inter font-bold leading-tight translate-y-10 opacity-0 text-black">
+            🔑 Đòi Hỏi Quyền Dữ Liệu Cá Nhân
+          </h3>
+          <p ref={body2} className="text-body-1 2xl:text-2xl font-roboto font-light leading-relaxed translate-y-10 opacity-0 text-black">
+            Chúng ta không thể tiếp tục là nạn nhân vô thức. Đòi hỏi quyền Dữ liệu cá nhân cũng quan trọng như đòi hỏi quyền lợi lao động hay quyền con người trong các thời đại trước. Chỉ khi đó, chúng ta mới có thể định hình tương lai số: làm sao để công nghệ và dữ liệu được sử dụng minh bạch, công bằng, phục vụ lợi ích chung của toàn xã hội, thay vì chỉ làm giàu cho một nhóm nhỏ tinh hoa.
+          </p>
         </div>
       </div>
     </section>

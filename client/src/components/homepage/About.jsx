@@ -51,7 +51,7 @@ export default function About() {
 
   return (
     <section ref={aboutSection} aria-label="about me">
-      <Heading title="about me" />
+      <Heading title="vấn đề" />
       <div className="mt-10 flex flex-col items-start gap-8 md:flex-row lg:gap-10 ">
         <div className="top-28 overflow-hidden rounded-md md:sticky md:w-1/2">
           <img
@@ -68,23 +68,16 @@ export default function About() {
           <div className="w-full space-y-4 2xl:space-y-10">
             <h3
               ref={heading}
-              className="translate-y-10 text-heading-3 2xl:text-7xl font-semibold leading-tight opacity-0"
+              className="translate-y-10 text-heading-3 2xl:text-6xl font-inter font-bold leading-tight opacity-0"
             >
-              A brief intro, who am I?
+              Địa Tô Dữ Liệu: Giá Trị Thặng Dư Thời Đại 4.0
             </h3>
-            <p ref={body} className=" translate-y-10 text-body-1 2xl:text-4xl opacity-0">
-              I am a tech enthusiast since middle school and love to interact with technology!
+            <p ref={body} className="translate-y-10 text-body-1 2xl:text-4xl font-roboto font-light opacity-0">
+              Trong kinh tế chính trị Marx-Lenin, địa tô là lợi nhuận thu được từ việc sở hữu đất đai – tư liệu sản xuất khan hiếm. Ngày nay, dữ liệu cá nhân của hàng tỷ người đã trở thành &quot;mảnh đất&quot; màu mỡ mới.
 
               <br></br>
-              <br></br>I have set up my path to pursue the things that excite me the 
-              most! Working on code has now become my passion and I look forward to 
-              convert it into my profession. 😎
               <br></br>
-              <br></br>
-              I am currently pursuing a bachelor's degree focused on Computer Science 
-              Engineering. Interested in Web Development, iOS Development & using AI to 
-              my advantage, I would love to be a part of a diverse team of people working 
-              on areas that are in my interest.
+              Địa tô dữ liệu là thuật ngữ chỉ khoản lợi nhuận khổng lồ các tập đoàn công nghệ thu về từ việc sở hữu và kiểm soát dữ liệu, thay vì trực tiếp tạo ra nó. Điều này tạo nên một cơ chế bóc lột và bất bình đẳng kiểu mới trong chủ nghĩa tư bản kỹ thuật số.
             </p>
           </div>
         </div>

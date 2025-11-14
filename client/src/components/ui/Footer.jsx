@@ -4,18 +4,18 @@ export default function Footer() {
   }
 
   return (
-    <footer className="mt-14 flex items-end justify-between px-5 py-4 sm:flex text-body-4 md:text-body-3">
+    <footer className="mt-14 flex items-end justify-between px-5 py-4 sm:flex text-body-4 md:text-body-3 font-roboto font-light">
       <div className="flex flex-col md:flex-row md:w-[62.5vw] lg:w-[57.5vw] justify-between">
         <div className="flex space-x-1">
           <span>{new Date().getFullYear()}</span>
-          <span className="font-extrabold uppercase 2xl:text-body-1">D.R.E.A.M</span>
+          <span className="font-inter font-bold uppercase 2xl:text-body-1">D.R.E.A.M</span>
         </div>
         <div>
           <span className="text-body-4 2xl:text-body-1">Designed and coded with ❤️</span>
         </div>
       </div>
-      <button onClick={toTop} className="col-span-2 flex items-center space-x-2 w-fit group 2xl:text-body-1">
-        <span className="font-extrabold uppercase hover:font-black duration-200">BACK TO TOP</span>
+      <button onClick={toTop} className="col-span-2 flex items-center space-x-2 w-fit group 2xl:text-body-1 font-inter font-bold">
+        <span className="uppercase hover:font-black duration-200">BACK TO TOP</span>
         <span className="group-hover:-translate-y-3 duration-300 ease-in-out">
           <svg
             className="-rotate-90"
