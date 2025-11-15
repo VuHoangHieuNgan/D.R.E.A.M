@@ -322,17 +322,13 @@ export default function FeedScreen() {
               </div>
 
               {/* Post Image */}
-              {post.image ? (
+              {post.image && (
                 <img
                   src={post.image}
                   alt={post.image_desc}
                   className="w-full h-auto object-cover"
                   loading="lazy"
                 />
-              ) : (
-                <div className="bg-gray-700 h-64 flex items-center justify-center text-gray-500 italic">
-                  📷 {post.image_desc}
-                </div>
               )}
 
               {/* Post Stats */}
