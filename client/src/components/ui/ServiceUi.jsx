@@ -52,10 +52,10 @@ export default function ServiceUi({ title, description, items }) {
     <div ref={serviceUi} className=" mt-10 grid grid-cols-1 gap-5 md:grid-cols-2 md:gap-24">
       <div className="space-y-6">
         <div className="space-y-3 2xl:space-y-10">
-          <h3 ref={heading} className="text-heading-3 2xl:text-7xl font-semibold leading-tight  translate-y-10 opacity-0">
+          <h3 ref={heading} className="text-heading-3 2xl:text-7xl font-inter font-bold leading-tight  translate-y-10 opacity-0">
             {title}
           </h3>
-          <p ref={body} className="max-w-md xl:max-w-2xl text-body-1 2xl:text-3xl  translate-y-10 opacity-0">{description}</p>
+          <p ref={body} className="max-w-md xl:max-w-2xl text-body-1 2xl:text-3xl font-roboto font-light translate-y-10 opacity-0">{description}</p>
         </div>
         <div ref={line} className="h-1 w-0 bg-accent-100 opacity-50 md:hidden"></div>
       </div>
