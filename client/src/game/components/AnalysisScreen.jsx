@@ -28,7 +28,10 @@ export default function AnalysisScreen() {
       const { GoogleGenerativeAI } = await import('@google/generative-ai');
       
       const genAI = new GoogleGenerativeAI(apiKey);
-      const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+      
+      // Try with gemini-2.0-flash first, fallback to gemini-2.5-flash-lite on 429 error
+      let model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+      let usingFallbackModel = false;
 
       // Prepare interaction data
       const interactionData = JSON.stringify(gameState.userInteractions, null, 2);
@@ -140,8 +143,27 @@ Trả về JSON hợp lệ, không có markdown, không có lời giải thích 
 
 **CHÚ Ý:** Tất cả text phải tiếng Việt. Phân tích phải dựa trên dữ liệu thực tế được cung cấp, không bịa đặt.`;
 
-      // Call API
-      const result = await model.generateContent(prompt);
+      // Call API with retry logic for 429 errors
+      let result;
+      try {
+        result = await model.generateContent(prompt);
+      } catch (apiError) {
+        // Check if it's a 429 error (rate limit/quota exceeded)
+        if (apiError.message && (apiError.message.includes('429') || apiError.message.includes('Resource exhausted'))) {
+          console.log('⚠️ Gemini 2.0 Flash bị giới hạn (429), chuyển sang Gemini 2.5 Flash Lite...');
+          
+          // Fallback to gemini-2.5-flash-lite
+          model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash-lite' });
+          usingFallbackModel = true;
+          
+          // Retry with fallback model
+          result = await model.generateContent(prompt);
+        } else {
+          // If it's not a 429 error, throw it
+          throw apiError;
+        }
+      }
+      
       const response = await result.response;
       const text = response.text();
 

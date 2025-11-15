@@ -35,12 +35,13 @@ export default {
         'headings': '-0.03em'
       },
       fontFamily: {
-        'general': ['GeneralSans-Variable', 'sans-serif'],
-        'grotesk': ['CabinetGrotesk-Variable', 'sans-serif'],
-        'inter': ['Inter', 'sans-serif'],
-        'montserrat': ['Montserrat', 'sans-serif'],
-        'roboto': ['Roboto', 'sans-serif'],
-        'open-sans': ['Open Sans', 'sans-serif'],
+        'sans': ['Exo 2', 'sans-serif'],
+        'heading': ['Exo 2', 'sans-serif'],
+        'paragraph': ['Manrope', 'sans-serif'],
+        'ui': ['Be Vietnam Pro', 'sans-serif'],
+        // Legacy aliases for backward compatibility
+        'general': ['Exo 2', 'sans-serif'],
+        'grotesk': ['Manrope', 'sans-serif'],
       },
       colors: {
         'transparent': 'transparent',
