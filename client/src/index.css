@@ -10,6 +10,13 @@
     border: 1px solid red;
   } */
 
+  /* CSS Custom Properties for Fonts */
+  :root {
+    --font-sans: "Exo 2", sans-serif;          /* Font chính cho text thông thường */
+    --font-heading: "Exo 2", sans-serif;       /* Font cho tiêu đề (H1, H2...) */
+    --font-paragraph: "Manrope", sans-serif;   /* Font cho đoạn văn, nội dung */
+    --font-ui: "Be Vietnam Pro", sans-serif;   /* Font cho UI elements (buttons, nav) */
+  }
   
   ::-moz-selection {
     background: #D1D1C7
@@ -26,22 +33,6 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
-  
-  @font-face {
-    font-family: "CabinetGrotesk-Variable";
-    src: url("./assets/fonts/CabinetGrotesk-Variable.ttf") format("truetype");
-    font-weight: 100 900;
-    font-display: swap;
-    font-style: normal;
-  }
-  
-  @font-face {
-    font-family: "GeneralSans-Variable";
-    src: url("./assets/fonts/GeneralSans-Variable.ttf") format("truetype");
-    font-weight: 200 700;
-    font-display: swap;
-    font-style: normal;
-  }
 
 
  @media (min-width: 640px) {
@@ -52,14 +43,15 @@
   a,
   p,
   span {
-    @apply font-grotesk;
+    font-family: var(--font-paragraph);
   }
 
   h1,
   h2,
   h3,
   h4 {
-    @apply font-general tracking-headings;
+    font-family: var(--font-heading);
+    @apply tracking-headings;
   }
 
   .font-outline-4 {

@@ -321,10 +321,19 @@ export default function FeedScreen() {
                 <p className="text-gray-200 leading-relaxed">{post.content}</p>
               </div>
 
-              {/* Post Image Placeholder */}
-              <div className="bg-gray-700 h-64 flex items-center justify-center text-gray-500 italic">
-                📷 {post.image_desc}
-              </div>
+              {/* Post Image */}
+              {post.image ? (
+                <img
+                  src={post.image}
+                  alt={post.image_desc}
+                  className="w-full h-auto object-cover"
+                  loading="lazy"
+                />
+              ) : (
+                <div className="bg-gray-700 h-64 flex items-center justify-center text-gray-500 italic">
+                  📷 {post.image_desc}
+                </div>
+              )}
 
               {/* Post Stats */}
               <div className="px-4 py-2 flex gap-6 text-sm text-gray-400 border-t border-gray-700">
