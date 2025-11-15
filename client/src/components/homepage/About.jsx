@@ -1,11 +1,11 @@
 import { useEffect, useRef } from "react";
-import profileImg from "/src/assets/images/profile.webp";
+import aboutImg from "/src/assets/images/about.png";
 import { ScrollTrigger } from "gsap/all";
 import { gsap } from "gsap";
 import Heading from "../ui/Heading";
 
 export default function About() {
-  const profile = useRef(null);
+  const about = useRef(null);
   const aboutSection = useRef(null);
   const heading = useRef(null);
   const body = useRef(null);
@@ -50,18 +50,20 @@ export default function About() {
   }, []);
 
   return (
-    <section ref={aboutSection} aria-label="about me">
-      <Heading title="vấn đề" />
+    <section ref={aboutSection} aria-label="about me" className="relative">
+      <div className="relative z-10">
+        <Heading title="vấn đề" />
+      </div>
       <div className="mt-10 flex flex-col items-start gap-8 md:flex-row lg:gap-10 ">
         <div className="top-28 overflow-hidden rounded-md md:sticky md:w-1/2">
           <img
-            ref={profile}
+            ref={about}
             loading="lazy"
             className="aspect-square h-auto w-full rounded-md object-cover object-center md:aspect-auto"
-            src={profileImg}
+            src={aboutImg}
             width="600"
             height="800"
-            alt="portrait image of Nikunj posing at an event"
+            alt="about image"
           />
         </div>
         <div className="top-20 sm:sticky md:top-28 lg:top-32 md:w-1/2">

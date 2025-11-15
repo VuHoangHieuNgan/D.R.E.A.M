@@ -1,12 +1,8 @@
-import signie from "/src/assets/images/signie.webp";
-import notrisk from "/src/assets/images/notrisk.webp";
-import evinco from "/src/assets/images/evinco.webp";
-import extract from "/src/assets/images/extract.webp";
-import circuits from "/src/assets/images/circuits.webp";
-// import memento from "/src/assets/images/memento-desktop.webp";
-// import acc from "/src/assets/images/acc-square.webp";
-// import daddy from "/src/assets/images/godaddy-desktop.webp";
-// import sunnyside from "/src/assets/images/sunnyside-desktop.webp";
+import work0 from "/src/assets/images/0.jpg";
+import work1 from "/src/assets/images/1.jpg";
+import work2 from "/src/assets/images/2.jpg";
+import work3 from "/src/assets/images/3.jpg";
+import work4 from "/src/assets/images/4.jpg";
 import Projects from "../ui/Projects";
 import Heading from "../ui/Heading";
 
@@ -23,7 +19,7 @@ export default function Works({ forwardedRef }) {
         <div className=" col-span-1 md:col-span-12">
           <Projects
             link="https://github.com/nikunjmathur08/Signie"
-            img={signie}
+            img={work0}
             alt="Signie"
             name="Trong nền kinh tế số, dữ liệu cá nhân đang là &quot;mảnh đất&quot; màu mỡ tạo ra lợi nhuận khổng lồ. Nhưng liệu giá trị đó có được phân phối công bằng?"
             type="Project này sẽ cùng bạn khám phá cách thức hệ quả xoáy, và quyền lợi của chúng ta qua 4 khía cạnh chính:"
@@ -33,7 +29,7 @@ export default function Works({ forwardedRef }) {
         <div className="col-span-1 pt-0 md:col-span-7 md:pt-16">
           <Projects
             link="https://not-risk.vercel.app"
-            img={notrisk}
+            img={work1}
             alt="Dữ Liệu & Giá Trị Thặng Dư Mới"
             name="Dữ Liệu &amp; Giá Trị Thặng Dư Mới"
             type="1. Giá trị thặng dư là gì? Là phần giá trị do lao động tạo ra vượt quá tiền lương, bị nhà tư bản chiếm đoạt.
@@ -48,7 +44,7 @@ export default function Works({ forwardedRef }) {
         <div className="col-span-1 pt-0 md:col-span-5 md:pt-80">
           <Projects
             link="https://github.com/nikunjmathur08/evinco"
-            img={evinco}
+            img={work2}
             alt="Lao Động Số & Bóc Lột Kiểu Mới"
             name="Lao Động Số &amp; Bóc Lột Kiểu Mới"
             type="1. Lao động số: Mọi hoạt động của người dùng trên không gian số (đăng bài, tìm kiếm, đánh giá, tương tác) đều tạo ra dữ liệu và giá trị kinh tế.
@@ -63,7 +59,7 @@ export default function Works({ forwardedRef }) {
         <div className="col-span-1 h-fit pt-0 md:col-span-7 md:pt-20">
           <Projects
             link="https://github.com/nikunjmathur08/Smart_Extractor"
-            img={extract}
+            img={work3}
             alt="Quyền Sở Hữu Dữ Liệu & Bất Bình Đẳng"
             name="Quyền Sở Hữu Dữ Liệu &amp; Bất Bình Đẳng"
             type="1. Quyền lực tập trung: Dữ liệu, được coi là tư liệu sản xuất tối quan trọng của thế kỷ 21, đang tập trung vào tay một số ít tập đoàn công nghệ (FAANG).
@@ -78,7 +74,7 @@ export default function Works({ forwardedRef }) {
         <div className="col-span-1 h-fit md:col-span-5">
         <Projects
             link="https://dld.srmist.edu.in/eLogic/"
-            img={circuits}
+            img={work4}
             alt="Quyền Riêng Tư & Nhân Phẩm Con Người"
             name="Quyền Riêng Tư &amp; Nhân Phẩm Con Người"
             type="1. Xâm phạm để trục lợi: Mô hình &quot;địa tô dữ liệu&quot; khuyến khích thu thập dữ liệu tối đa, dẫn đến xâm phạm quyền riêng tư của cá nhân.
